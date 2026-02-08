@@ -1,0 +1,54 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// DFS-based cycle detection for undirected graph
+bool hasCycle(int u, int parent,
+              const vector<vector<int>> &adj,
+              vector<bool> &visited)
+{
+    visited[u] = true;
+
+    for (int v : adj[u]) {
+        if (!visited[v]) {
+            if (hasCycle(v, u, adj, visited))
+                return true;
+        }
+        else if (v != parent) {
+            // visited neighbor that is not parent -> cycle
+            return true;
+        }
+    }
+    return false;
+}
+
+int main() {
+    int n = 4;
+    vector<vector<int>> adj(n);
+
+    // Undirected graph with a cycle
+    adj[0] = {1, 3};
+    adj[1] = {0, 2};
+    adj[2] = {1, 3};
+    adj[3] = {2, 0};
+
+    vector<bool> visited(n, false);
+    bool cycleFound = false;
+
+    // Run DFS from each unvisited vertex
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            if (hasCycle(i, -1, adj, visited)) {
+                cycleFound = true;
+                break;
+            }
+        }
+    }
+
+    if (cycleFound)
+        cout << "Cycle detected\n";
+    else
+        cout << "No cycle\n";
+
+    return 0;
+}
